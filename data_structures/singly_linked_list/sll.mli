@@ -6,4 +6,6 @@ val new_sll : 'a -> 'a sll
 
 val append : v:'a -> ll:'a sll -> unit
 
+val size : ll:'a sll -> int
+
 (*val search : int -> 'a sll -> 'a *)
