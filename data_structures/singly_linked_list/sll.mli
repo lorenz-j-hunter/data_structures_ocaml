@@ -1,6 +1,6 @@
-type 'a node = {v: 'a; next: 'a node option}
+type 'a node = {v: 'a; next: ('a node option) ref}
 
-type 'a sll = {head: 'a node option}
+type 'a sll = {head: ('a node option) ref}
 
 val new_sll : 'a -> 'a sll
 
