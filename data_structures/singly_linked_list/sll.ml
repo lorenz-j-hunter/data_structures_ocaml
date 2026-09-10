@@ -15,9 +15,20 @@ let append = fun ~v ~ll ->
   append_unwrapped ~v:v ~n:ll.head
 
 let rec size_unwrapped = fun ~n size ->
-  match n with
-  | Some node -> size_unwrapped ~n:!(node.next) (size+1) 
+  match !n with
+  | Some node -> size_unwrapped ~n:(node.next) (size+1) 
   | None -> size 
 
 let size = fun ~ll ->
-  size_unwrapped ~n:!(ll.head) 0;
+  size_unwrapped ~n:(ll.head) 0
+
+let rec search_unwrapped = fun ~n ~index ->
+  match !n with
+  | Some node ->
+    if index = 0 then node.v
+    else search_unwrapped ~n:(node.next) ~index:(index-1)
+  | None -> failwith "search: out of bounds" 
+
+let search = fun ~ll ~index ->
+  if index < 0 then failwith "search: invalid index";
+  search_unwrapped ~n:(ll.head) ~index:3

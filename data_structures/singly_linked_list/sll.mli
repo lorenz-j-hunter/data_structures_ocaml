@@ -8,4 +8,4 @@ val append : v:'a -> ll:'a sll -> unit
 
 val size : ll:'a sll -> int
 
-(*val search : int -> 'a sll -> 'a *)
+val search : ll:'a sll -> index:int -> 'a 
