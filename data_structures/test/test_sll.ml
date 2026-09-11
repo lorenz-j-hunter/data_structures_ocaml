@@ -48,6 +48,16 @@ let test_search_2 () =
     with _ -> false 
   end
 
+let test_search_3 () =
+  Alcotest.(check bool) "Search" false begin
+    try
+      let sll = new_sll 0 in (
+        List.iter (fun x -> append ~v:x ~ll:sll) [1;2;3;4];
+        if (search ~ll:sll ~index:(-1)) = 5 then true else false 
+      )
+    with _ -> false 
+  end
+
 let () =
   let open Alcotest in
   run "SLL" [
@@ -60,6 +70,7 @@ let () =
     ];
     "search", [
       test_case "Test" `Quick test_search_1;
-      test_case "Test" `Quick test_search_2
+      test_case "Test" `Quick test_search_2;
+      test_case "Test" `Quick test_search_3
     ];
   ]
