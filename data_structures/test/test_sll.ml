@@ -58,6 +58,17 @@ let test_search_3 () =
     with _ -> false 
   end
 
+let test_insert_1 () =
+  Alcotest.(check int) "Insert" 10 begin
+    try
+      let sll = new_sll 0 in (
+        List.iter (fun x -> append ~v:x ~ll:sll) [1;2;3;4];
+        insert ~ll:sll ~index:3 ~v:10;
+        (search ~ll:sll ~index:3)
+      )
+    with _ -> -1
+  end
+
 let () =
   let open Alcotest in
   run "SLL" [
@@ -73,4 +84,7 @@ let () =
       test_case "Test" `Quick test_search_2;
       test_case "Test" `Quick test_search_3
     ];
+    "insert", [
+      test_case "Test" `Quick test_insert_1;
+    ]
   ]

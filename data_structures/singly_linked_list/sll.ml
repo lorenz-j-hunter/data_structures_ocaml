@@ -32,3 +32,17 @@ let rec search_unwrapped = fun ~n ~index ->
 let search = fun ~ll ~index ->
   if index < 0 then failwith "search: invalid index";
   search_unwrapped ~n:(ll.head) ~index:3
+
+let rec insert_unwrapped = fun ~n ~index ~v ->
+  match !n with
+  | Some node ->
+    if index = 0 then
+      let added = Some {v=v; next=(node.next)} in (*create new node. Link it to the tail.*)
+        n := added;
+    else
+      insert_unwrapped ~n:(node.next) ~index:(index-1) ~v:v
+  | None -> failwith "index: out of bounds"
+
+let insert = fun ~ll ~v ~index ->
+  if index < 0 then failwith "insert: invalid index";
+  insert_unwrapped ~n:(ll.head) ~v:v ~index:index
