@@ -41,8 +41,27 @@ let rec insert_unwrapped = fun ~n ~index ~v ->
         n := added;
     else
       insert_unwrapped ~n:(node.next) ~index:(index-1) ~v:v
-  | None -> failwith "index: out of bounds"
+  | None -> failwith "insert: out of bounds"
 
 let insert = fun ~ll ~v ~index ->
   if index < 0 then failwith "insert: invalid index";
   insert_unwrapped ~n:(ll.head) ~v:v ~index:index
+
+let rec remove_unwrapped = fun ~n ~index ->
+  match !n with
+  | Some node ->
+    if index = 1 then
+      let nextnext = Option.get !((Option.get !(node.next)).next) in
+        node.next := Some nextnext
+    else
+      remove_unwrapped ~n:(node.next) ~index:(index-1)
+  | None -> failwith "remove: out of bounds"
+
+let remove = fun ~ll ~index ->
+  if index < 0 then failwith "remove: invalid index";
+  if index = 0 then (* Base case. *)
+    match !(ll.head) with
+    | Some h -> ll.head := !(h.next)
+    | None -> ()
+  else
+    remove_unwrapped ~n:(ll.head) ~index:index

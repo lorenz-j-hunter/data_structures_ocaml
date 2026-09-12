@@ -69,6 +69,17 @@ let test_insert_1 () =
     with _ -> -1
   end
 
+let test_remove_1 () =
+  Alcotest.(check int) "Remove" 4 begin
+    try
+      let sll = new_sll 0 in (
+        List.iter (fun x -> append ~v:x ~ll:sll) [1;2;3;4];
+        remove ~ll:sll ~index:3;
+        (search ~ll:sll ~index:3)
+      )
+    with _ -> -1
+  end
+
 let () =
   let open Alcotest in
   run "SLL" [
@@ -86,5 +97,8 @@ let () =
     ];
     "insert", [
       test_case "Test" `Quick test_insert_1;
+    ];
+    "remove", [
+      test_case "Test" `Quick test_remove_1;
     ]
   ]
