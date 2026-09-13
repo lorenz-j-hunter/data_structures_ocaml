@@ -80,6 +80,30 @@ let test_remove_1 () =
     with _ -> -1
   end
 
+let test_extend_1 () =
+  Alcotest.(check int) "Extend" 9 begin
+    try
+      let pair = (new_sll 0, new_sll 5) in (
+        List.iter (fun x -> append ~v:x ~ll:(fst pair)) [1;2;3;4];
+        List.iter (fun x -> append ~v:x ~ll:(snd pair)) [6;7;8];
+        extend ~ll_one:(fst pair) ~ll_two:(snd pair);
+        (size ~ll:(fst pair))
+      )
+    with _ -> -1
+  end
+
+let test_extend_2 () =
+  Alcotest.(check int) "Extend" 7 begin
+    try
+      let pair = (new_sll 0, new_sll 5) in (
+        List.iter (fun x -> append ~v:x ~ll:(fst pair)) [1;2;3;4];
+        List.iter (fun x -> append ~v:x ~ll:(snd pair)) [6;7;8];
+        extend ~ll_one:(fst pair) ~ll_two:(snd pair);
+        (search ~ll:(fst pair) ~index:7)
+      )
+    with _ -> -1
+  end
+
 let () =
   let open Alcotest in
   run "SLL" [
@@ -100,5 +124,9 @@ let () =
     ];
     "remove", [
       test_case "Test" `Quick test_remove_1;
+    ];
+    "extend", [
+      test_case "Test" `Quick test_extend_1;
+      test_case "Test" `Quick test_extend_2;
     ]
   ]

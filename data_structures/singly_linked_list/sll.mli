@@ -10,8 +10,10 @@ val append : v:'a -> ll:'a sll -> unit
 
 val size : ll:'a sll -> int
 
-val search : ll:'a sll -> index:int -> 'a 
+val search : ll:'a sll -> index:int -> 'a
 
 val insert : ll:'a sll -> v:'a -> index:int -> unit 
 
 val remove : ll:'a sll -> index:int -> unit
+
+val extend : ll_one:'a sll -> ll_two:'a sll -> unit

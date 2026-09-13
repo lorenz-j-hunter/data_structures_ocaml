@@ -31,7 +31,7 @@ let rec search_unwrapped = fun ~n ~index ->
 
 let search = fun ~ll ~index ->
   if index < 0 then failwith "search: invalid index";
-  search_unwrapped ~n:(ll.head) ~index:3
+  search_unwrapped ~n:(ll.head) ~index:index
 
 let rec insert_unwrapped = fun ~n ~index ~v ->
   match !n with
@@ -65,3 +65,11 @@ let remove = fun ~ll ~index ->
     | None -> ()
   else
     remove_unwrapped ~n:(ll.head) ~index:index
+
+let rec extend_unwrapped = fun ~n_one ~n_two ->
+  match !n_one with
+  | Some node -> extend_unwrapped ~n_one:(node.next) ~n_two
+  | None -> n_one := !n_two
+
+let extend = fun ~ll_one ~ll_two ->
+  extend_unwrapped ~n_one:(ll_one.head) ~n_two:(ll_two.head)
