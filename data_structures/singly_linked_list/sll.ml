@@ -36,9 +36,9 @@ let search = fun ~ll ~index ->
 let rec insert_unwrapped = fun ~n ~index ~v ->
   match !n with
   | Some node ->
-    if index = 0 then
-      let added = Some {v=v; next=(node.next)} in (*create new node. Link it to the tail.*)
-        n := added;
+    if index = 1 then
+      let next = node.next in
+        next := Some {v=v; next=n}
     else
       insert_unwrapped ~n:(node.next) ~index:(index-1) ~v:v
   | None -> failwith "insert: out of bounds"
@@ -73,3 +73,21 @@ let rec extend_unwrapped = fun ~n_one ~n_two ->
 
 let extend = fun ~ll_one ~ll_two ->
   extend_unwrapped ~n_one:(ll_one.head) ~n_two:(ll_two.head)
+
+let rec reverse_unwrapped = fun ~n ~prev ~ll ->
+  match !n with
+  | Some node ->
+    reverse_unwrapped ~n:(node.next) ~prev:n ~ll;
+    let prev_unpeeled = Option.get !prev in
+      insert ~ll:ll ~v:prev_unpeeled.v ~index:0; (*Insert to the front of the list*)
+      prev := Some (new_node prev_unpeeled.v); (*Remove the last node of the list*)
+  | None -> (*The error happens here.*)
+    let prev_unpeeled = Option.get !prev in
+      insert ~ll:ll ~v:prev_unpeeled.v ~index:0; (*Insert to the front of the list*)
+      prev := Some (new_node prev_unpeeled.v) (*Remove the last node of the list*)
+
+let reverse = fun ~ll ->
+  match !(ll.head) with
+  | Some node ->
+    reverse_unwrapped ~n:node.next ~prev:ll.head ~ll
+  | None -> ()
