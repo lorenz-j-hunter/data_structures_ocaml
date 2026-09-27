@@ -82,13 +82,23 @@ let extend = fun ~ll_one ~ll_two ->
 let rec reverse_unwrapped ~n ~next ~nextnext ~ll =
   match nextnext with
   | None -> ()
-  | Some nextnextnode ->
-    reverse_unwrapped n.next n.next.next n.next.next.next;
-    (*recursive case*)
-    nextnextnext.next = nextnext
+  | Some _ ->
+    let unpeel thing = !thing |> Option.get
+    and next = unpeel n.next
+    and nextnext = unpeel next.next
+    and nextnextnext = unpeel nextnext.next
+    in begin reverse_unwrapped next nextnext nextnextnext;
+      (*recursive case*)
+      nextnextnext := Some nextnext;
     (*base case*)
     if n = ll.head then
       (*perform reversal*)
+      nextnextnext := Some next;
+      nextnext := n; end
 
 let reverse ll =
-  reverse_unwrapped ll.head ll.head.next ll.head.next.next ll 
+  let unpeel thing = !thing |> Option.get
+  and head = unpeel ll.head
+  and next = unpeel head.next
+  and nextnext = unpeel next.next 
+  in reverse_unwrapped head next nextnext ll 
