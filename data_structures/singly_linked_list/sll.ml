@@ -82,23 +82,25 @@ let extend = fun ~ll_one ~ll_two ->
 let rec reverse_unwrapped ~n ~next ~nextnext ~ll =
   match nextnext with
   | None -> ()
-  | Some _ ->
-    let unpeel thing = !thing |> Option.get
-    and next = unpeel n.next
-    and nextnext = unpeel next.next
-    and nextnextnext = unpeel nextnext.next
-    in begin reverse_unwrapped next nextnext nextnextnext;
+  | Some nextnext_ ->
+    let unpeel thing = !thing |> Option.get in
+    let next = unpeel n.next
+    and nextnext = unpeel next.next 
+    and nextnextnext = unpeel nextnext_.next
+    in begin reverse_unwrapped ~n:next ~next:nextnext ~nextnext:(Some nextnextnext) ~ll;
+      (*base case*)
+      if n = unpeel ll.head then begin
+        (*perform reversal*)
+        ref nextnextnext := next;
+        ref nextnext := n; end
       (*recursive case*)
-      nextnextnext := Some nextnext;
-    (*base case*)
-    if n = ll.head then
-      (*perform reversal*)
-      nextnextnext := Some next;
-      nextnext := n; end
+      else 
+        ref nextnextnext := nextnext; end
 
 let reverse ll =
   let unpeel thing = !thing |> Option.get
-  and head = unpeel ll.head
-  and next = unpeel head.next
-  and nextnext = unpeel next.next 
-  in reverse_unwrapped head next nextnext ll 
+  and getnext thing = thing.next in
+  let head = unpeel ll.head
+  and next = ll.head |> unpeel |> getnext |> unpeel (*unpeel head.next*)
+  and nextnext = ll.head |> unpeel |> getnext |> unpeel |> getnext |> unpeel
+  in reverse_unwrapped ~n:head ~next:next ~nextnext:(Some nextnext) ~ll:ll 

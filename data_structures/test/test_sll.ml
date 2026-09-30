@@ -120,7 +120,7 @@ let test_reverse_1 () =
     try
       let sll = new_sll 0 in (
         List.iter (fun x -> append ~v:x ~ll:sll) [1;2;3;4;5;6;7;8;9];
-        reverse ~ll:sll;
+        reverse sll;
         [(search ~ll:sll ~index:9); (search ~ll:sll ~index:0)]
       )
     with _ -> [-1] 
