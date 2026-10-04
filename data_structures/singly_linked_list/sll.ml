@@ -79,28 +79,31 @@ let rec extend_unwrapped = fun ~n_one ~n_two ->
 let extend = fun ~ll_one ~ll_two ->
   extend_unwrapped ~n_one:(ll_one.head) ~n_two:(ll_two.head)
 
-let rec reverse_unwrapped ~n ~next ~nextnext ~last ~ll =
-  match nextnext with
-  | None -> last.next := !next (*keep reference to last node*) 
-  | Some nextnext_ ->
-    let unpeel thing = !thing |> Option.get in
-    let next = unpeel n.next
-    and nextnext = unpeel next.next 
-    and nextnextnext = !nextnext_.next
-    in begin reverse_unwrapped ~n:next ~next:nextnext ~nextnext:nextnextnext ~last ~ll;
-      if n = unpeel ll.head then begin (*base case*)
+let rec reverse_unwrapped ~(n: 'a node) ~(next: 'a node) ~(nextnext: 'a node option) ~last ~ll =
+  let unpeel thing = !thing |> Option.get
+  and getnext thing = thing.next
+  and deref thing = !thing
+  in match nextnext with
+  | None -> last.next := !next; (*keep reference to last node*) 
+  | Some nextnext ->
+    let cur = unpeel n in
+    let newn = cur.next (*node option ref*)
+    and newnext = cur.next |> unpeel |> getnext (*node option ref*) 
+    and newnextnext = cur.next |> unpeel |> getnext |> unpeel |> getnext (*Some or None*)
+    in begin reverse_unwrapped ~n:newn ~next:newnext ~nextnext:!newnextnext ~last ~ll;
+      if unpeel n = unpeel ll.head then begin (*base case*)
         (*perform reversal*)
-        ref nextnextnext := next;
-        ref nextnext := n;
-        ll.head := !last.next; end
+        newnextnext |> unpeel |> ref := unpeel next; (*nextnext.next := !next*)
+        newnext |> unpeel |> ref := unpeel n; (*next.next := n*)
+        ll.head := !(last.next); end
       else (*recursive case*)
-        ref nextnextnext := nextnext; end
+        newnextnext |> unpeel |> ref := newnext |> unpeel ; end (*nextnext.next := n.next*)
 
 let reverse ll =
   let unpeel thing = !thing |> Option.get
   and getnext thing = thing.next in
   let head = unpeel ll.head
   and next = ll.head |> unpeel |> getnext |> unpeel (*unpeel head.next*)
-  and nextnext = ll.head |> unpeel |> getnext |> unpeel |> getnext |> unpeel (*unpeel head.next.next*)
-  and last = new_node head.v in
+  and nextnext = ll.head |> unpeel |> getnext |> unpeel |> getnext |> unpeel in (*unpeel head.next.next*)
+  let last = new_node head.v
   in reverse_unwrapped ~n:head ~next:next ~nextnext:(Some nextnext) ~last:last ~ll:ll
