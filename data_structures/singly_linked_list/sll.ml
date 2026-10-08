@@ -79,25 +79,32 @@ let rec extend_unwrapped = fun ~n_one ~n_two ->
 let extend = fun ~ll_one ~ll_two ->
   extend_unwrapped ~n_one:(ll_one.head) ~n_two:(ll_two.head)
 
-let rec reverse_unwrapped ~n ~ll =
+let rec reverse_unwrapped ~n ~ll ~last =
   let getnext thing = thing.next
   and unpeel thing = !thing |> Option.get in
-  let node = n |> unpeel
+  let unpeeled_n = n |> unpeel
   and next = n |> unpeel |> getnext 
-  and nextnext = n |> unpeel |> getnext |> unpeel |> getnext  
-  and nextnextnext = n |> unpeel |> getnext |> unpeel |> getnext |> unpeel |> getnext in
+  and nextnext = n |> unpeel |> getnext |> unpeel |> getnext in
+  (*if nextnextnext declared here, it will fail because nextnextnext = None which can't be left operand*)
   match !nextnext with
-  | None -> ()
-  | Some nextnext_ ->
-    reverse_unwrapped ~n:next ~ll;
+  | None ->
+    last.next := !next (*keep reference to last node*)
+  | Some _ ->
+    (*it reaches here*)
+    reverse_unwrapped ~n:next ~ll ~last;
+    (*nextnextnext -> infinite loop here*)
+    let nextnextnext = n |> unpeel |> getnext |> unpeel |> getnext in
     (*base case*)
-    if node = unpeel ll.head then begin
-      (*perform reversal*)
-      nextnextnext := !next;
-      nextnext := !n; end
-    (*recursive case*)
-    else 
-      nextnextnext := !nextnext
+      if unpeeled_n = unpeel ll.head then begin
+        (*perform reversal*)
+        nextnextnext := !next;
+        nextnext := !n;
+        ll.head := !(last.next); end
+      (*recursive case*)
+      else 
+        nextnext := !n
 
 let reverse ll =
-  reverse_unwrapped ~n:ll.head ~ll:ll 
+  let head = !(ll.head) |> Option.get in
+  let last = new_node head.v in
+  reverse_unwrapped ~n:ll.head ~ll:ll ~last:last
