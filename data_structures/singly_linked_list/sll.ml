@@ -82,29 +82,13 @@ let extend = fun ~ll_one ~ll_two ->
 let rec reverse_unwrapped ~n ~ll ~last =
   let getnext thing = thing.next
   and unpeel thing = !thing |> Option.get in
-  (*let unpeeled_n = n |> unpeel*)
   let next = n |> unpeel |> getnext 
   and nextnext = n |> unpeel |> getnext |> unpeel |> getnext in
-  (*if nextnextnext declared here, it will fail because nextnextnext = None which can't be left operand*)
   match !nextnext with
   | None ->
     last.next := !next (*keep reference to last node*)
   | Some _ ->
     reverse_unwrapped ~n:next ~ll ~last
-    (*nextnextnext here -> infinite loop here*)
-    (*base case*)
-    (*
-      if unpeeled_n = unpeel ll.head then begin
-        ()
-        (*perform reversal*)
-        (*
-        nextnextnext := !next;
-        nextnext := !n;
-        ll.head := !(last.next); *) end
-      (*recursive case*)
-      else 
-        nextnext := !n
-    *)
 
 let reverse ll =
   let head = !(ll.head) |> Option.get in

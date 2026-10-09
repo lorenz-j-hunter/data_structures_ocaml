@@ -18,4 +18,4 @@ val remove : ll:'a sll -> index:int -> unit
 
 val extend : ll_one:'a sll -> ll_two:'a sll -> unit
 
-val reverse : ll:'a sll -> unit
+val reverse : 'a sll -> unit

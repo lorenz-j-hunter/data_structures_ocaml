@@ -1,0 +1,4 @@
+(library
+ (name set)
+ (modules :standard)
+ (libraries singly_linked_list))

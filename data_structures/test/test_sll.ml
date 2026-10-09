@@ -126,6 +126,17 @@ let test_reverse_1 () =
     with _ -> [-1] 
   end
 
+let test_reverse_2 () =
+  Alcotest.(check (list int)) "Reverse" [2; 0] begin
+    try
+      let sll = new_sll 0 in (
+        List.iter (fun x -> append ~v:x ~ll:sll) [1;2];
+        reverse sll;
+        [(search ~ll:sll ~index:2); (search ~ll:sll ~index:0)]
+      )
+    with _ -> [-1] 
+  end
+
 let () =
   let open Alcotest in
   run "SLL" [
@@ -154,5 +165,6 @@ let () =
     ];
     "reverse", [
       test_case "Test" `Quick test_reverse_1;
+      test_case "Test" `Quick test_reverse_2;
     ]
   ]
