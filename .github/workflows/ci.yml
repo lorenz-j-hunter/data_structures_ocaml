@@ -1,0 +1,33 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        ocaml-compiler: ["5.2", "4.14"]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: ${{ matrix.ocaml-compiler }} 
+
+      - name: Install dune 
+        run: opam install dune --yes
+
+      - name: Install alcotest 
+        run: opam install alcotest --yes
+
+      - name: Build
+        working-directory: ./atrep
+        run: opam exec -- dune build
+
+      - name: Run tests
+        working-directory: ./atrep
+        run: opam exec -- dune runtest
