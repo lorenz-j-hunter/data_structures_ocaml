@@ -94,3 +94,7 @@ let reverse ll =
   let head = !(ll.head) |> Option.get in
   let last = new_node head.v in
   reverse_unwrapped ~n:ll.head ~ll:ll ~last:last
+
+let partition ll index =
+  Format.printf "index=%d\n" index;
+  [ll]
