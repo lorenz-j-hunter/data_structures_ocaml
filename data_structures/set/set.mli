@@ -1,7 +1,7 @@
 (*Will not expose the real set.*)
 open Singly_linked_list.Sll
 
-type 'a set = {the_set: 'a sll}
+type 'a set = {elems: 'a sll}
 
 val new_set : 'a -> 'a set
 
