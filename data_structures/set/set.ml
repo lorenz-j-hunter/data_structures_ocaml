@@ -12,10 +12,10 @@ let rec to_list set =
       unpack {head=cur.next} (ret @ [cur.v]);
   in unpack set.elems []
 
-let member elem set =
+let member (elem: 'a) (set: 'a set) =
   exists elem set.elems
 
-let not_member elem set =
+let not_member (elem: 'a) (set: 'a set) =
   not (exists elem set.elems)
 
 let cardinality set =
@@ -68,7 +68,7 @@ let difference s1 s2 =
     match !(elems1.head) with
     | None -> {elems=(remove difference 0)}
     | Some node ->
-      if member node s2 then
+      if member node.v s2 then
         iter ~difference (remove elems1 0) 
       else
         iter ~difference:(insert difference node.v 0) (remove elems1 0) 
@@ -80,35 +80,35 @@ let sym_diff (s1: 'a set) (s2: 'a set) =
     match !(elems1.head), !(elems2.head) with
     | None, None -> {elems=acc}
     | Some node, None ->
-      if member node intersection then
+      if member node.v intersection then
         (*don't put in*)
         iter ~acc (*elems1*){head=node.next} elems2
       else
         (*put in*)
         iter ~acc:(insert acc node.v 0) (*elems1*){head=node.next} elems2
     | None, Some node ->
-      if member node intersection then
+      if member node.v intersection then
         (*don't put in*) 
         iter ~acc elems1 (*elems2*){head=node.next}
       else
         (*put in*)
         iter ~acc:(insert acc node.v 0) elems1 (*elems2*){head=node.next}
     | Some node1, Some node2 ->
-      if member node1 intersection && member node2 intersection then
+      if member node1.v intersection && member node2.v intersection then
         (*if both are members of intersection, add neither.*)
         iter ~acc (*elems1*){head=node1.next} (*elems2*){head=node2.next}
-      else if member node1 intersection && not (member node2 intersection) then
+      else if member node1.v intersection && not (member node2.v intersection) then
         (*if node2 is a member of the intersection, add it.*)
         let new_acc = insert acc node2.v 0 in
           iter ~acc:new_acc (*elems1*){head=node1.next} (*elems2*){head=node2.next} 
-      else if not (member node1 intersection) && member node2 intersection then 
+      else if not (member node1.v intersection) && member node2.v intersection then 
         (*if node1 is a member of the intersection, add it.*)
         let new_acc = insert acc node1.v 0 in
           iter ~acc:new_acc (*elems1*){head=node1.next} (*elems2*){head=node2.next} 
       else 
         (*if both are members  of the intersection, add them both.*)
         let new_acc = insert acc node1.v 0 in
-        let new_new_acc = insert acc node2.v 0 in
+        let new_new_acc = insert new_acc node2.v 0 in
           iter ~acc:new_new_acc (*elems1*){head=node1.next} (*elems2*){head=node2.next}  
   in iter s1.elems s2.elems 
 

@@ -29,6 +29,8 @@ val is_superset : 'a set -> 'a set -> bool
 
 val is_disjoint : 'a set -> 'a set -> bool
 
+(*
 val rbs : 'a -> 'a set -> bool
 
 val rts : 'a -> 'a set -> bool (*recursive ternary search.*)
+*)
