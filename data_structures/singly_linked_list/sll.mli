@@ -10,7 +10,7 @@ val new_node : 'a -> 'a node
 
 val new_sll : 'a -> 'a sll
 
-val append : v:'a -> 'a sll -> 'a sll
+val append : 'a -> 'a sll -> 'a sll
 
 val size : 'a sll -> int
 

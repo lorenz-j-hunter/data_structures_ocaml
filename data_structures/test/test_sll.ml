@@ -4,7 +4,7 @@ let test_append_1 () =
   Alcotest.(check bool) "Append" true begin
     try
       let sll = new_sll 0 in
-        append ~ll:sll ~v:1;
+        append 1 sll;
       true
     with _ -> false
     end
