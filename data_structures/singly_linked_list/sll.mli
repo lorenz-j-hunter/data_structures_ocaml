@@ -2,22 +2,28 @@ type 'a node = {v: 'a; next: ('a node option) ref}
 
 type 'a sll = {head: ('a node option) ref}
 
+val unpeel : ('a node option) ref -> 'a node
+
+val getnext : 'a node -> ('a node option) ref
+
 val new_node : 'a -> 'a node
 
 val new_sll : 'a -> 'a sll
 
-val append : v:'a -> ll:'a sll -> unit
+val append : v:'a -> 'a sll -> 'a sll
 
-val size : ll:'a sll -> int
+val size : 'a sll -> int
 
-val search : ll:'a sll -> index:int -> 'a
+val search : 'a sll -> int -> 'a
 
-val insert : ll:'a sll -> v:'a -> index:int -> unit 
+val exists : 'a -> 'a sll -> bool
 
-val remove : ll:'a sll -> index:int -> unit
+val insert : 'a sll -> 'a -> int -> 'a sll 
 
-val extend : ll_one:'a sll -> ll_two:'a sll -> unit
+val remove : 'a sll -> int -> 'a sll 
 
-val reverse : 'a sll -> unit
+val extend : 'a sll -> 'a sll -> 'a sll 
+
+val reverse : 'a sll -> 'a sll 
 
 val partition : 'a sll -> int -> 'a sll list
