@@ -102,15 +102,16 @@ let reverse (ll: 'a sll) =
   let last = new_node head.v in
   let rec reverse_unwrapped = fun ~(n: 'a node option ref) ~(ll: 'a sll) ~(last: 'a node) -> 
     let next = n |> unpeel |> getnext 
-    and nextnext = n |> unpeel |> getnext |> unpeel |> getnext in
-    match !nextnext with
+    match !next with
     | None ->
-      last.next := !next; (*keep reference to last node*)
+      last.next := n (*keep reference to last node*)
     | Some _ ->
       reverse_unwrapped ~n:next ~ll ~last
+      last.next := n;
+      last := last.next;
   in begin
     reverse_unwrapped ~n:ll.head ~ll ~last;
-    {head=ll.head} (*return*) end
+    ll (*return*) end
 
 (*The second list in the partition has its first elem
 on the index argument.*)
