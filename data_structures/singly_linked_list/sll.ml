@@ -97,21 +97,30 @@ let extend (ll_one: 'a sll) (ll_two: 'a sll) =
   in extend_unwrapped ~n_one:ll_one.head ~n_two:ll_two.head 
 
 (*Why does this work?*)
-let reverse (ll: 'a sll) =
-  let head = unpeel ll.head in
-  let last = new_node head.v in
-  let rec reverse_unwrapped = fun ~(n: 'a node option ref) ~(ll: 'a sll) ~(last: 'a node) -> 
-    let next = n |> unpeel |> getnext 
+let reverse (ll: int sll) =
+  let last = new_node (-1) |> Option.some |> ref in
+  let origin = last in
+  let rec reverse_unwrapped = fun ~(n: int node option ref) ~(last: int node option ref) ->
+    let next = n |> unpeel |> getnext in
     match !next with
     | None ->
-      last.next := n (*keep reference to last node*)
+      let r = unpeel last in
+        r.next := !n; (*keep reference to last node*)
+        last := !(r.next);
+        let origin_unpeeled = unpeel origin in (*make the head have the last value.*)
+        let the_val = ref origin_unpeeled.v in
+          the_val := r.v;
+        ll.head := !origin;
     | Some _ ->
-      reverse_unwrapped ~n:next ~ll ~last
-      last.next := n;
-      last := last.next;
+      reverse_unwrapped ~n:next ~last;
+      let r = unpeel last in
+        r.next := !n;
+        last := !(r.next);
+        Format.printf "last.v=%d\n" r.v;
   in begin
-    reverse_unwrapped ~n:ll.head ~ll ~last;
-    ll (*return*) end
+    reverse_unwrapped ~n:ll.head ~last;
+    let thing = unpeel ll.head in Format.printf "origin.v=%d\n" thing.v;
+    ll end
 
 (*The second list in the partition has its first elem
 on the index argument.*)
