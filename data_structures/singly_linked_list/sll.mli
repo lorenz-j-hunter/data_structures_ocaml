@@ -1,3 +1,6 @@
+(*all of these functions mutate the argument, then return that argument.*)
+(*This is the directory upon which all others depend.*)
+
 type 'a node = {v: 'a; next: ('a node option) ref}
 
 type 'a sll = {head: ('a node option) ref}
@@ -24,6 +27,6 @@ val remove : 'a sll -> int -> 'a sll
 
 val extend : 'a sll -> 'a sll -> 'a sll 
 
-val reverse : 'a sll -> 'a sll 
+val reverse : int sll -> int sll 
 
 val partition : 'a sll -> int -> 'a sll list

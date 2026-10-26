@@ -115,18 +115,18 @@ let test_extend_2 () =
   end
 
 let test_reverse_1 () =
-  Alcotest.(check (list int)) "Reverse" [9; 0] begin
+  Alcotest.(check (list int)) "Reverse" [0; 9] begin
     try
       let sll = ref (new_sll 0) in (
         List.iter (fun x -> sll := append x !sll) [1;2;3;4;5;6;7;8;9];
-        sll := reverse !sll; 
-        [(search !sll 8); (search !sll 0)]
+        let ret = reverse !sll in
+          [(search ret 9); (search ret 0)]
       )
     with _ -> [-1] 
   end
 
 let test_reverse_2 () =
-  Alcotest.(check (list int)) "Reverse" [2; 0] begin
+  Alcotest.(check (list int)) "Reverse" [0; 2] begin
     try
       let sll = new_sll 0 |> ref in (
         List.iter (fun x -> sll := append x !sll) [1;2];

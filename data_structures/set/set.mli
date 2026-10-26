@@ -1,36 +1,36 @@
 (*Will not expose the real set.*)
 open Singly_linked_list.Sll
 
-type 'a set = {elems: 'a sll}
+type set = {elems: int sll}
 
-val new_set : 'a -> 'a set
+val new_set : int -> set
 
-val to_list : 'a set -> 'a list
+val to_list : set -> int list
 
-val member : 'a -> 'a set -> bool (*O(n) time, will search on list instead of rbs.*)
+val member : int -> set -> bool (*O(n) time, will search on list instead of rbs.*)
 
-val not_member : 'a -> 'a set -> bool
+val not_member : int -> set -> bool
 
-val cardinality : 'a set -> int
+val cardinality : set -> int
 
-val is_ordered : 'a set -> bool
+val is_ordered : set -> bool
 
-val union : 'a set -> 'a set -> 'a set
+val union : set -> set -> set
 
-val intersection : 'a set -> 'a set -> 'a set
+val intersection : set -> set -> set
 
-val difference : 'a set -> 'a set -> 'a set
+val difference : set -> set -> set
 
-val sym_diff : 'a set -> 'a set -> 'a set
+val sym_diff : set -> set -> set
 
-val is_subset : 'a set -> 'a set -> bool
+val is_subset : set -> set -> bool
 
-val is_superset : 'a set -> 'a set -> bool
+val is_superset : set -> set -> bool
 
-val is_disjoint : 'a set -> 'a set -> bool
+val is_disjoint : set -> set -> bool
 
 (*
-val rbs : 'a -> 'a set -> bool
+val rbs : int -> set -> bool
 
-val rts : 'a -> 'a set -> bool (*recursive ternary search.*)
+val rts : int -> set -> bool (*recursive ternary search.*)
 *)

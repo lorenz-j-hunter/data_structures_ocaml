@@ -1,11 +1,14 @@
 open Set
+open Singly_linked_list.Sll
 
 let test_member_1 () =
-  Alcotest.(check bool) "Member" true begin
+  Alcotest.(check bool) "member" true begin
     try
-      false
-    with _ -> false
-    end
+      let sll: int sll ref = {head=(ref None)} |> ref in
+        List.iter (fun x -> sll := append x !sll) [1;2;3;4];
+        let set: set = {elems=(!sll)} in
+          member 3 set
+    with _ -> false end
 
 let () =
   let open Alcotest in
