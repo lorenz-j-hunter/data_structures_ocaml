@@ -25,9 +25,9 @@ jobs:
         run: opam install alcotest --yes
 
       - name: Build
-        working-directory: ./atrep
+        working-directory: ./data_structures
         run: opam exec -- dune build
 
       - name: Run tests
-        working-directory: ./atrep
+        working-directory: ./data_structures
         run: opam exec -- dune runtest
