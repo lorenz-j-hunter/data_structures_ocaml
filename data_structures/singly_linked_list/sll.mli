@@ -27,6 +27,6 @@ val remove : 'a sll -> int -> 'a sll
 
 val extend : 'a sll -> 'a sll -> 'a sll 
 
-val reverse : int sll -> int sll 
+val reverse : 'a sll -> 'a sll 
 
 val partition : 'a sll -> int -> 'a sll list

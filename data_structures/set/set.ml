@@ -1,6 +1,6 @@
 open Singly_linked_list.Sll
 
-type set = {elems: int sll}
+type 'a set = {elems: 'a sll}
 
 let new_set elem = {elems=(new_sll elem)}
 
@@ -12,10 +12,10 @@ let rec to_list set =
       unpack {head=cur.next} (ret @ [cur.v]);
   in unpack set.elems []
 
-let member (elem: int) (set: set) =
+let member (elem: 'a) (set: 'a set) =
   exists elem set.elems
 
-let not_member (elem: int) (set: set) =
+let not_member (elem: 'a) (set: 'a set) =
   not (exists elem set.elems)
 
 let cardinality set =
@@ -23,7 +23,7 @@ let cardinality set =
 
 (*This only works for integer sets.*)
 let rec is_ordered = fun set ->
-  let rec is_ordered_unwrapped = fun ~(cur: int node option ref) ~(prev: int node option ref) ->
+  let rec is_ordered_unwrapped = fun ~(cur: 'a node option ref) ~(prev: 'a node option ref) ->
     match !cur with
     | None -> true
     | Some unpeeled_node -> 
@@ -41,7 +41,7 @@ let rec is_ordered = fun set ->
     else true
 
 let union s1 s2 =
-  let rec iter = fun (l: int sll) (acc: int sll) ->
+  let rec iter = fun (l: 'a sll) (acc: 'a sll) ->
     match !(l.head) with
     | None -> {elems=(reverse acc)}
     | Some node ->
@@ -51,8 +51,8 @@ let union s1 s2 =
         iter {head=node.next} (insert acc node.v 0)
   in iter (extend s1.elems s2.elems) {head=(ref None)}
 
-let intersection s1 s2 =
-  let rec iter = fun ?(store: int list = []) (l: int sll) (acc: int sll)  ->
+let intersection (s1: 'a set) (s2: 'a set) =
+  let rec iter = fun ?(store: 'a list = []) (l: 'a sll) (acc: 'a sll)  ->
     match !(l.head) with
     | None -> {elems=acc} 
     | Some node ->
@@ -63,8 +63,8 @@ let intersection s1 s2 =
   in iter (extend s1.elems s2.elems) {head=(ref None)} 
 
 (*Find the elements which are only in set 1.*)
-let difference s1 s2 =
-  let rec iter = fun ?(difference: int sll = {head=(ref None)}) (elems1: int sll) ->
+let difference (s1: 'a set) (s2: 'a set) =
+  let rec iter = fun ?(difference: 'a sll = {head=(ref None)}) (elems1: 'a sll) ->
     match !(elems1.head) with
     | None -> {elems=(remove difference 0)}
     | Some node ->
@@ -74,9 +74,9 @@ let difference s1 s2 =
         iter ~difference:(insert difference node.v 0) (remove elems1 0) 
   in iter s1.elems
 
-let sym_diff (s1: set) (s2: set) = 
+let sym_diff (s1: 'a set) (s2: 'a set) = 
   let intersection = intersection s1 s2 in
-  let rec iter = fun ?(acc: int sll = {head=(ref None)}) (elems1: int sll) (elems2: int sll) ->
+  let rec iter = fun ?(acc: 'a sll = {head=(ref None)}) (elems1: 'a sll) (elems2: 'a sll) ->
     match !(elems1.head), !(elems2.head) with
     | None, None -> {elems=acc}
     | Some node, None ->
