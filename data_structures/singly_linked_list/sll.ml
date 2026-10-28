@@ -122,14 +122,26 @@ let reverse (ll: 'a sll) =
 
 (*The second list in the partition has its first elem
 on the index argument.*)
-let partition (ll: 'a sll) (index: int) =
-  if index < 0 then failwith "partition: invalid index";
-  let rec partition_unwrapped = fun ~(ll: 'a sll) ~(index: int) ~(acc: 'a sll) ->
-    if index = 0 then
-      [remove acc 0; {head=ll.head}] (*making sure we remove that extra ll.head.v at the beginning*)
-    else
-      partition_unwrapped
-      ~ll:(remove ll 0)
-      ~index:(index-1)
-      ~acc:(insert acc (search ll 0) 0) (*insert the first of ll into the first of acc*)
-  in partition_unwrapped ~ll:ll ~index:index ~acc:(new_sll (unpeel ll.head).v)
+let partition (ll: 'a sll) (i_arg: int) =
+  let first: 'a sll = {head=ref None}
+  and second: 'a sll = {head=ref None} in
+  let rec partition_unwrapped ~(n: 'a node option ref) ~(second_head: 'a node option ref) ~(i: int) =
+    let next = n |> unpeel |> getnext in
+    match !next with
+    | None -> 
+      (*append n to the list 'second'; go back.*) 
+      (unpeel second_head).next := !n;
+    | Some _ ->
+      (*if i >= index_arg, then append to the list 'second' (pre-order)*)
+      if i >= i_arg then
+        (unpeel second_head).next := !n;
+        second_head := !(second_head |> unpeel |> getnext);
+      (*recursive call here*)
+      partition_unwrapped ~n:next ~second_head:second_head ~i:(i+1);
+      (*if i < index_arg, then concatenate (not append) to the list 'first' (post-order)*)
+      if i < i_arg then
+        let new_first = ref first in
+          new_first := insert first (n |> unpeel).v 0;
+  in let _ = partition_unwrapped ~n:ll.head ~second_head:second.head ~i:0 in
+  let ret: 'b sll = {head={v=first; next=({v=second; next=ref None} |> Option.some |> ref)} |> Option.some |> ref} in
+    ret

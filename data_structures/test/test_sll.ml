@@ -1,4 +1,5 @@
 open Singly_linked_list.Sll
+open Set
 
 let test_append_1 () =
   Alcotest.(check bool) "Append" true begin
@@ -6,7 +7,7 @@ let test_append_1 () =
       let getv node = node.v in
         (append 1 {head=(ref None)}).head |> unpeel |> getv = 1
     with _ -> false
-    end
+  end
 
 let test_size_1 () =
   Alcotest.(check int) "Size" 1 begin
@@ -136,6 +137,18 @@ let test_reverse_2 () =
     with _ -> [-1] 
   end
 
+let test_partition_1 () =
+  Alcotest.(check bool) "Partition" true begin
+    try
+      let sll = ref (new_sll 0) in (
+        List.iter (fun x -> sll := append x !sll) [1;2;3;4;5];
+        let first: int list = {elems=search (partition !sll 3) 0} |> to_list
+        and second: int list = {elems=search (partition !sll 3) 1} |> to_list
+        in [[0;1;2];[3;4;5]] = [first;second] 
+      )
+    with _ -> false
+  end
+
 let () =
   let open Alcotest in
   run "SLL" [
@@ -165,5 +178,8 @@ let () =
     "reverse", [
       test_case "Test" `Quick test_reverse_1;
       test_case "Test" `Quick test_reverse_2;
+    ];
+    "partition", [
+      test_case "Test" `Quick test_partition_1;
     ]
   ]
