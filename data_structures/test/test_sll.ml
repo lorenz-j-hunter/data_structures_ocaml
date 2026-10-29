@@ -138,15 +138,15 @@ let test_reverse_2 () =
   end
 
 let test_partition_1 () =
-  Alcotest.(check bool) "Partition" true begin
+  Alcotest.(check string) "Partition" "correct" begin
     try
       let sll = ref (new_sll 0) in (
         List.iter (fun x -> sll := append x !sll) [1;2;3;4;5];
         let first: int list = {elems=search (partition !sll 3) 0} |> to_list
-        and second: int list = {elems=search (partition !sll 3) 1} |> to_list
-        in [[0;1;2];[3;4;5]] = [first;second] 
+        and second: int list = {elems=search (partition !sll 3) 1} |> to_list in
+          if [[0;1;2];[3;4;5]] = [first;second] then "correct" else "incorrect"
       )
-    with _ -> false
+    with _ -> "failure" 
   end
 
 let () =

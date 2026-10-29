@@ -8,6 +8,8 @@ let unpeel thing = !thing |> Option.get
 
 let getnext thing = thing.next
 
+let getv thing = (!thing |> Option.get).v
+
 let new_sll v = {head=ref (Some {v=v; next=(ref None)})}
 
 let append (v: 'a) (ll: 'a sll) = 
@@ -128,20 +130,26 @@ let partition (ll: 'a sll) (i_arg: int) =
   let rec partition_unwrapped ~(n: 'a node option ref) ~(second_head: 'a node option ref) ~(i: int) =
     let next = n |> unpeel |> getnext in
     match !next with
-    | None -> 
-      (*append n to the list 'second'; go back.*) 
-      (unpeel second_head).next := !n;
-    | Some _ ->
+    | None -> begin
+      (*append n to the list 'second'; go back.*)
+      match !second_head with
+      | None -> second_head := !n;
+      | Some node -> begin
+        node.next := !n end end
+    | Some _ -> begin
       (*if i >= index_arg, then append to the list 'second' (pre-order)*)
       if i >= i_arg then
-        (unpeel second_head).next := !n;
-        second_head := !(second_head |> unpeel |> getnext);
+        (*append to second*)
+        match !second_head with
+        | None -> second_head := !n;
+        | Some node -> begin
+          node.next := !n;
+          second_head := !(second_head |> unpeel |> getnext) end;
       (*recursive call here*)
       partition_unwrapped ~n:next ~second_head:second_head ~i:(i+1);
       (*if i < index_arg, then concatenate (not append) to the list 'first' (post-order)*)
-      if i < i_arg then
-        let new_first = ref first in
-          new_first := insert first (n |> unpeel).v 0;
-  in let _ = partition_unwrapped ~n:ll.head ~second_head:second.head ~i:0 in
-  let ret: 'b sll = {head={v=first; next=({v=second; next=ref None} |> Option.some |> ref)} |> Option.some |> ref} in
+      if i < i_arg then let new_first = ref first in
+        new_first := insert first (n |> unpeel).v 0 end
+  in let _ = partition_unwrapped ~n:ll.head ~second_head:(second.head) ~i:0 in
+  let ret: 'a sll sll = {head={v=first; next=({v=second; next=ref None} |> Option.some |> ref)} |> Option.some |> ref} in
     ret
