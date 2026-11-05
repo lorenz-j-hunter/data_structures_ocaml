@@ -4,7 +4,7 @@ type 'a set = {elems: 'a sll}
 
 val new_set : 'a -> 'a set
 
-val to_list : 'a set -> 'a list
+val to_list : 'a set -> 'a list (*utility*)
 
 val member : 'a -> 'a set -> bool 
 

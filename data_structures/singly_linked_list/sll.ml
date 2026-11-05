@@ -135,15 +135,18 @@ let partition (ll: 'a sll) (i_arg: int) =
   let rec partition_unwrapped = fun ~(n: 'a node option ref) ~(i: int) ->
     let next = n |> unpeel |> getnext in
       match !next with
-      | None -> Format.printf "pre_order: i=%d\n" i; 
+      | None ->
+        if i >= i_arg then begin
+          let v = getv n in second := !second @ [v]; 
+          Printf.printf "pre_order: i=%d\n" i end
       | Some _ -> begin
         if i >= i_arg then begin
-          let v = getv n in second := v :: !second; 
+          let v = getv n in second := !second @ [v]; 
           Printf.printf "pre_order: i=%d\n" i end;
         partition_unwrapped ~n:next ~i:(i+1);
         let _ = unpeel n in Format.printf "-\n";
         if i < i_arg then begin
-          let v = getv n in first := v :: !first; 
+          let v = getv n in first := v :: !first;
           Format.printf "post_order: i=%d\n" i end;
       end
   in let _ = partition_unwrapped ~n:ll.head ~i:0 in
