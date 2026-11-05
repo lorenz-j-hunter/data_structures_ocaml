@@ -122,34 +122,30 @@ let reverse (ll: 'a sll) =
     reverse_unwrapped ~n:ll.head ~last;
     origin end
 
+(*turn a list into an sll.*)
+let to_sll (l: 'a list) = 
+  let sll = ref {head=ref None} in begin
+    List.iter (fun x -> sll := append x !sll) l;
+    !sll end
+
 (*The second list in the partition has its first elem
 on the index argument.*)
 let partition (ll: 'a sll) (i_arg: int) =
-  let first: 'a sll = {head=ref None}
-  and second: 'a sll = {head=ref None} in
-  let rec partition_unwrapped ~(n: 'a node option ref) ~(second_head: 'a node option ref) ~(i: int) =
+  let first: 'a list ref = ref [] and second: 'a list ref = ref [] in
+  let rec partition_unwrapped = fun ~(n: 'a node option ref) ~(i: int) ->
     let next = n |> unpeel |> getnext in
-    match !next with
-    | None -> begin
-      (*append n to the list 'second'; go back.*)
-      match !second_head with
-      | None -> second_head := !n;
-      | Some node -> begin
-        node.next := !n end end
-    | Some _ -> begin
-      (*if i >= index_arg, then append to the list 'second' (pre-order)*)
-      if i >= i_arg then
-        (*append to second*)
-        match !second_head with
-        | None -> second_head := !n;
-        | Some node -> begin
-          node.next := !n;
-          second_head := !(second_head |> unpeel |> getnext) end;
-      (*recursive call here*)
-      partition_unwrapped ~n:next ~second_head:second_head ~i:(i+1);
-      (*if i < index_arg, then concatenate (not append) to the list 'first' (post-order)*)
-      if i < i_arg then let new_first = ref first in
-        new_first := insert first (n |> unpeel).v 0 end
-  in let _ = partition_unwrapped ~n:ll.head ~second_head:(second.head) ~i:0 in
-  let ret: 'a sll sll = {head={v=first; next=({v=second; next=ref None} |> Option.some |> ref)} |> Option.some |> ref} in
-    ret
+      match !next with
+      | None -> Format.printf "pre_order: i=%d\n" i; 
+      | Some _ -> begin
+        if i >= i_arg then begin
+          let v = getv n in second := v :: !second; 
+          Printf.printf "pre_order: i=%d\n" i end;
+        partition_unwrapped ~n:next ~i:(i+1);
+        let _ = unpeel n in Format.printf "-\n";
+        if i < i_arg then begin
+          let v = getv n in first := v :: !first; 
+          Format.printf "post_order: i=%d\n" i end;
+      end
+  in let _ = partition_unwrapped ~n:ll.head ~i:0 in
+  let ret = {head={v=to_sll !first; next={v=to_sll !second; next=ref None} |> Option.some |> ref} |> Option.some |> ref} in
+    ret 

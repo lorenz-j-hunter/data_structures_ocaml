@@ -80,6 +80,16 @@ let test_insert_2 () =
     with _ -> -1
   end
 
+let test_insert_3 () =
+  Alcotest.(check int) "Insert" 0 begin
+    try
+      let sll = ref {head=ref None} in (
+        sll := insert !sll (*v**)0 (*index*)0;
+        (search !sll 0)
+      )
+    with _ -> -1
+  end
+
 let test_remove_1 () =
   Alcotest.(check int) "Remove" 4 begin
     try
@@ -166,7 +176,8 @@ let () =
     ];
     "insert", [
       test_case "Test" `Quick test_insert_1;
-      test_case "Test" `Quick test_insert_2
+      test_case "Test" `Quick test_insert_2;
+      test_case "Test" `Quick test_insert_3
     ];
     "remove", [
       test_case "Test" `Quick test_remove_1;
