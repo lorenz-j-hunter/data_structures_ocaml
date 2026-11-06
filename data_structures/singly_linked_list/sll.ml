@@ -53,7 +53,8 @@ let insert (ll: 'a sll) (v: 'a) (index: int) =
   match !(ll.head) with
   | Some node -> (*Base case*)
     if index = 0 then begin
-      ll.head := Some {v=v; next=ll.head}; ll end
+      let ret: 'a sll = {head={v=v; next=ll.head}|>Option.some|>ref} in ret
+      (*ll.head := Some {v=v; next=ll.head}; ll*) end
     else
       let rec insert_unwrapped = fun ~(n: 'a node option ref) ~(v: 'a) ~(index: int) ->
         match !n with
@@ -122,33 +123,24 @@ let reverse (ll: 'a sll) =
     reverse_unwrapped ~n:ll.head ~last;
     origin end
 
-(*turn a list into an sll.*)
-let to_sll (l: 'a list) = 
-  let sll = ref {head=ref None} in begin
-    List.iter (fun x -> sll := append x !sll) l;
-    !sll end
-
 (*The second list in the partition has its first elem
 on the index argument.*)
 let partition (ll: 'a sll) (i_arg: int) =
-  let first: 'a list ref = ref [] and second: 'a list ref = ref [] in
+  let first: 'a sll ref = ref {head=ref None} and second: 'a sll ref = ref {head=ref None} in
   let rec partition_unwrapped = fun ~(n: 'a node option ref) ~(i: int) ->
     let next = n |> unpeel |> getnext in
       match !next with
       | None ->
         if i >= i_arg then begin
-          let v = getv n in second := !second @ [v]; 
-          Printf.printf "pre_order: i=%d\n" i end
+          let v = getv n in (second := append v !second); end
       | Some _ -> begin
         if i >= i_arg then begin
-          let v = getv n in second := !second @ [v]; 
-          Printf.printf "pre_order: i=%d\n" i end;
+          let v = getv n in ( second := append v !second ); end;
         partition_unwrapped ~n:next ~i:(i+1);
         let _ = unpeel n in Format.printf "-\n";
         if i < i_arg then begin
-          let v = getv n in first := v :: !first;
-          Format.printf "post_order: i=%d\n" i end;
+          let v = getv n in (first := insert !first v 0); end;
       end
   in let _ = partition_unwrapped ~n:ll.head ~i:0 in
-  let ret = {head={v=to_sll !first; next={v=to_sll !second; next=ref None} |> Option.some |> ref} |> Option.some |> ref} in
+  let ret = {head={v= !first; next={v= !second; next=ref None} |> Option.some |> ref} |> Option.some |> ref} in
     ret 
