@@ -29,6 +29,4 @@ val extend : 'a sll -> 'a sll -> 'a sll
 
 val reverse : 'a sll -> 'a sll 
 
-val to_sll : 'a list -> 'a sll
-
 val partition : 'a sll -> int -> 'a sll sll

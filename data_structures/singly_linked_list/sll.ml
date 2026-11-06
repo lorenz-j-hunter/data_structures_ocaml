@@ -137,7 +137,6 @@ let partition (ll: 'a sll) (i_arg: int) =
         if i >= i_arg then begin
           let v = getv n in ( second := append v !second ); end;
         partition_unwrapped ~n:next ~i:(i+1);
-        let _ = unpeel n in Format.printf "-\n";
         if i < i_arg then begin
           let v = getv n in (first := insert !first v 0); end;
       end

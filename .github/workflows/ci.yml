@@ -24,6 +24,10 @@ jobs:
       - name: Install alcotest 
         run: opam install alcotest --yes
 
+      - name: Clean 
+        working-directory: ./data_structures
+        run: opam exec -- dune clean 
+
       - name: Build
         working-directory: ./data_structures
         run: opam exec -- dune build
