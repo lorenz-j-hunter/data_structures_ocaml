@@ -99,11 +99,9 @@ let extend (ll_one: 'a sll) (ll_two: 'a sll) =
       {head=ll_one.head} (*return*)
   in extend_unwrapped ~n_one:ll_one.head ~n_two:ll_two.head 
 
-(*Why does this work?*)
 let reverse (ll: 'a sll) =
-  let last = new_node (unpeel ll.head).v |> Option.some |> ref in
   let origin = {head=ref None} in
-  let rec reverse_unwrapped = fun ~(n: 'a node option ref) ~(last: 'a node option ref) ->
+  let rec reverse_unwrapped = fun ~(n: 'a node option ref) ~(last: 'a node option ref) -> begin
     let next = n |> unpeel |> getnext
     and nextnext = n |> unpeel |> getnext |> unpeel |> getnext in
     match !nextnext with
@@ -119,9 +117,19 @@ let reverse (ll: 'a sll) =
       let r = unpeel last in
         r.next := !n;
         last := !(r.next);
-  in begin
-    reverse_unwrapped ~n:ll.head ~last;
-    origin end
+  end in begin
+    match size ll with
+    | 0 -> origin  
+    | 1 -> ll
+    | 2 ->
+      let first = search ll 1 and second = search ll 0 and ret = {head=ref None} |> ref in
+        ret := append first !ret;
+        ret := append second !ret; 
+        !ret
+    | _ ->
+      let last = new_node (unpeel ll.head).v |> Option.some |> ref in
+      let _ = reverse_unwrapped ~n:ll.head ~last in
+        origin end
 
 (*The second list in the partition has its first elem
 on the index argument.*)

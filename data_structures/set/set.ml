@@ -27,9 +27,11 @@ let rec is_ordered = fun set ->
     match !cur with
     | None -> true
     | Some unpeeled_node -> 
-      if (unpeel prev).v <= unpeeled_node.v then
-        is_ordered_unwrapped ~cur:(unpeeled_node.next) ~prev:((unpeel prev).next)
-      else false
+      try
+        if (unpeel prev).v <= unpeeled_node.v then
+          is_ordered_unwrapped ~cur:(unpeeled_node.next) ~prev:((unpeel prev).next)
+        else false
+      with exn -> failwith "is_ordered: invalid argument";
   in
     if size set.elems > 2 then
       is_ordered_unwrapped ~cur:(set.elems.head|>unpeel|>getnext) ~prev:set.elems.head
@@ -41,15 +43,16 @@ let rec is_ordered = fun set ->
     else true
 
 let union s1 s2 =
-  let rec iter = fun (l: 'a sll) (acc: 'a sll) ->
-    match !(l.head) with
-    | None -> {elems=(reverse acc)}
+  let rec iter = fun (l: 'a sll) (acc: 'a sll ref) ->
+    match !(l.head) with 
+    | None -> 
+      {elems=(reverse acc)}
     | Some node ->
       if exists node.v acc then
         iter {head=node.next} acc 
       else
-        iter {head=node.next} (insert acc node.v 0)
-  in iter (extend s1.elems s2.elems) {head=(ref None)}
+        iter {head=node.next} (insert acc node.v 0) (*The error is with insert/append. When it changes, error happens*)
+  in iter (extend s1.elems s2.elems) ({head=(ref None)} |> ref)
 
 let intersection (s1: 'a set) (s2: 'a set) =
   let rec iter = fun ?(store: 'a list = []) (l: 'a sll) (acc: 'a sll)  ->

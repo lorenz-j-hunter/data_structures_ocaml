@@ -18,6 +18,15 @@ let test_size_1 () =
     with _ -> -1 
     end
 
+let test_size_2 () =
+  Alcotest.(check int) "Size" 0 begin
+    try
+      let sll = {head=ref None} in ( 
+        size sll
+      )
+    with _ -> -1 
+    end
+
 let test_append_2 () =
   Alcotest.(check int) "Append" 5 begin
     try
@@ -147,6 +156,16 @@ let test_reverse_2 () =
     with _ -> [-1] 
   end
 
+let test_reverse_3 () =
+  Alcotest.(check string) "Reverse" "correct" begin
+    try
+      let sll = {head=ref None} |> ref in (
+        sll := reverse !sll;
+        if size !sll = 0 then "correct" else "incorrect" 
+      )
+    with _ -> "failure" 
+  end
+
 let test_partition_1 () =
   Alcotest.(check string) "Partition" "correct" begin
     try
@@ -167,7 +186,8 @@ let () =
       test_case "Test" `Quick test_append_2
     ];
     "size", [
-      test_case "Test" `Quick test_size_1
+      test_case "Test" `Quick test_size_1;
+      test_case "Test" `Quick test_size_2;
     ];
     "search", [
       test_case "Test" `Quick test_search_1;
@@ -189,6 +209,7 @@ let () =
     "reverse", [
       test_case "Test" `Quick test_reverse_1;
       test_case "Test" `Quick test_reverse_2;
+      test_case "Test" `Quick test_reverse_3;
     ];
     "partition", [
       test_case "Test" `Quick test_partition_1;
