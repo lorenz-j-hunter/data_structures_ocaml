@@ -99,7 +99,7 @@ let test_union_1 () =
         List.iter (fun x -> intended := append x !intended) [1;2;3;4;5];
         let s1 = {elems=(!sll1)} and s2 = {elems=(!sll2)} and i_set = {elems=(!intended)} in 
           if to_list (union s1 s2) = to_list i_set then "correct" else "incorrect"
-    with _ -> "failure" end
+    with exn -> Stdlib.raise exn end
 
 let () =
   let open Alcotest in

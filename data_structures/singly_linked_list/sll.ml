@@ -53,8 +53,9 @@ let insert (ll: 'a sll) (v: 'a) (index: int) =
   match !(ll.head) with
   | Some node -> (*Base case*)
     if index = 0 then begin
-      let ret: 'a sll = {head={v=v; next=ll.head}|>Option.some|>ref} in ret
-      (*ll.head := Some {v=v; next=ll.head}; ll*) end
+      let cycle_preventer = new_node (ll.head |> getv) in
+        cycle_preventer.next := ll.head |> unpeel |> getnext |> (!); (*= next node*)
+        let ret: 'a sll = {head={v=v; next=cycle_preventer |> Option.some |> ref} |> Option.some |> ref} in ret end
     else
       let rec insert_unwrapped = fun ~(n: 'a node option ref) ~(v: 'a) ~(index: int) ->
         match !n with
@@ -66,7 +67,7 @@ let insert (ll: 'a sll) (v: 'a) (index: int) =
             insert_unwrapped ~n:node.next ~index:(index-1) ~v:v
         | None -> failwith "insert: out of bounds"     
       in insert_unwrapped ~n:ll.head ~v:v ~index:index
-  | None -> ll.head := Some (new_node v); ll
+  | None -> {head= new_node v |> Option.some |> ref}
 
 let remove (ll: 'a sll) (index: int) = 
   if index < 0 then failwith "remove: invalid index";
@@ -101,34 +102,30 @@ let extend (ll_one: 'a sll) (ll_two: 'a sll) =
 
 let reverse (ll: 'a sll) =
   let origin = {head=ref None} in
-  let rec reverse_unwrapped = fun ~(n: 'a node option ref) ~(last: 'a node option ref) -> begin
+  let rec reverse_unwrapped = fun ~(n: 'a node option ref) ~(p: 'a node option ref) -> begin
     let next = n |> unpeel |> getnext
     and nextnext = n |> unpeel |> getnext |> unpeel |> getnext in
     match !nextnext with
     | None ->
-      let r = unpeel last in
-        r.next := !n; (*keep reference to last node*)
-        last := !(r.next);
-        origin.head := new_node (unpeel next).v |> Option.some;
-        let thing = unpeel origin.head in
-          thing.next := !last;
+      origin.head := new_node (getv next) |> Option.some;
+      let o = unpeel origin.head in
+        o.next := !n;
+        p := o.next |> (!);
     | Some _ ->
-      reverse_unwrapped ~n:next ~last;
-      let r = unpeel last in
-        r.next := !n;
-        last := !(r.next);
+      reverse_unwrapped ~n:next ~p;
+      let o = unpeel p in (*keep a pointer on the last node of origin.*)
+        o.next := !n;
+        p := o.next |> (!);
   end in begin
     match size ll with
     | 0 -> origin  
     | 1 -> ll
     | 2 ->
-      let first = search ll 1 and second = search ll 0 and ret = {head=ref None} |> ref in
-        ret := append first !ret;
-        ret := append second !ret; 
-        !ret
+      let first = search ll 1 and second = search ll 0 and ret = {head=ref None} in
+        append first ret |> append second
     | _ ->
-      let last = new_node (unpeel ll.head).v |> Option.some |> ref in
-      let _ = reverse_unwrapped ~n:ll.head ~last in
+      let p = new_node (unpeel ll.head).v |> Option.some |> ref in
+      let _ = reverse_unwrapped ~n:ll.head ~p in
         origin end
 
 (*The second list in the partition has its first elem

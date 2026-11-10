@@ -42,17 +42,27 @@ let rec is_ordered = fun set ->
         else false
     else true
 
+(*Order is preserved. If s1 and s2 are ordered sets, union s1 s2 will be an ordered set.*)
 let union s1 s2 =
-  let rec iter = fun (l: 'a sll) (acc: 'a sll ref) ->
-    match !(l.head) with 
-    | None -> 
-      {elems=(reverse acc)}
-    | Some node ->
-      if exists node.v acc then
-        iter {head=node.next} acc 
-      else
-        iter {head=node.next} (insert acc node.v 0) (*The error is with insert/append. When it changes, error happens*)
-  in iter (extend s1.elems s2.elems) ({head=(ref None)} |> ref)
+  let rec iter = fun (l: 'a sll) (acc: 'a sll) ->
+    let next = l.head |> unpeel |> getnext in
+    match !next with
+    | None ->
+      let node = l.head |> unpeel in
+        if exists node.v acc then begin
+          let ret = acc (*|> reverse*) in 
+            {elems=ret} end
+        else begin
+          let ret = insert acc (getv l.head) 0 (*|> reverse*) in (
+            Format.printf "size acc = %d\n" (size acc); (*= 4. Now, the problem is reverse. Reversal produces a cycle.*)
+            {elems=ret} ) end
+    | Some _ ->
+      let node = l.head |> unpeel in
+        if exists node.v acc then begin
+          iter {head=node.next} acc end
+        else begin
+          iter {head=node.next} (insert acc node.v 0) end
+  in iter (extend s1.elems s2.elems) {head=(ref None)}
 
 let intersection (s1: 'a set) (s2: 'a set) =
   let rec iter = fun ?(store: 'a list = []) (l: 'a sll) (acc: 'a sll)  ->

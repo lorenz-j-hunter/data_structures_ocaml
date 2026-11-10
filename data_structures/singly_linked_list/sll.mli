@@ -9,6 +9,8 @@ val unpeel : ('a node option) ref -> 'a node
 
 val getnext : 'a node -> ('a node option) ref
 
+val getv : ('a node option) ref -> 'a
+
 val new_node : 'a -> 'a node
 
 val new_sll : 'a -> 'a sll
