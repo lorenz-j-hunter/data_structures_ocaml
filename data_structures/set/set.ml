@@ -50,11 +50,10 @@ let union s1 s2 =
     | None ->
       let node = l.head |> unpeel in
         if exists node.v acc then begin
-          let ret = acc (*|> reverse*) in 
+          let ret = acc |> reverse in 
             {elems=ret} end
         else begin
-          let ret = insert acc (getv l.head) 0 (*|> reverse*) in (
-            Format.printf "size acc = %d\n" (size acc); (*= 4. Now, the problem is reverse. Reversal produces a cycle.*)
+          let ret = insert acc (getv l.head) 0 |> reverse in (
             {elems=ret} ) end
     | Some _ ->
       let node = l.head |> unpeel in

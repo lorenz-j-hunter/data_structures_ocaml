@@ -109,12 +109,12 @@ let reverse (ll: 'a sll) =
     | None ->
       origin.head := new_node (getv next) |> Option.some;
       let o = unpeel origin.head in
-        o.next := !n;
+        o.next := new_node (getv n) |> Option.some;
         p := o.next |> (!);
     | Some _ ->
       reverse_unwrapped ~n:next ~p;
       let o = unpeel p in (*keep a pointer on the last node of origin.*)
-        o.next := !n;
+        o.next := new_node (getv n) |> Option.some;
         p := o.next |> (!);
   end in begin
     match size ll with
@@ -124,7 +124,7 @@ let reverse (ll: 'a sll) =
       let first = search ll 1 and second = search ll 0 and ret = {head=ref None} in
         append first ret |> append second
     | _ ->
-      let p = new_node (unpeel ll.head).v |> Option.some |> ref in
+      let p = new_node (getv ll.head) |> Option.some |> ref in
       let _ = reverse_unwrapped ~n:ll.head ~p in
         origin end
 
