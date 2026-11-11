@@ -101,6 +101,39 @@ let test_union_1 () =
           if to_list (union s1 s2) = to_list i_set then "correct" else "incorrect"
     with exn -> Stdlib.raise exn end
 
+let test_intersection_1 () =
+  Alcotest.(check string) "intersection" "correct" begin
+    try
+      let l1 = {head=(ref None)} |> ref and l2 = {head=(ref None)} |> ref and intended = {head=(ref None)} |> ref in
+        List.iter (fun x -> l1 := append x !l1) [1;2;3;4];
+        List.iter (fun x -> l2 := append x !l2) [3;4;5;6];
+        List.iter (fun x -> intended := append x !intended) [3;4];
+        let s1 = {elems=(!l1)} and s2 = {elems=(!l2)} and i_set = {elems=(!intended)} in 
+          if to_list (intersection s1 s2) = to_list i_set then "correct" else "incorrect"
+    with exn -> Stdlib.raise exn end
+
+let test_difference_1 () =
+  Alcotest.(check string) "difference" "correct" begin
+    try
+      let l1 = {head=(ref None)} |> ref and l2 = {head=(ref None)} |> ref and intended = {head=(ref None)} |> ref in
+        List.iter (fun x -> l1 := append x !l1) [1;2;3;4];
+        List.iter (fun x -> l2 := append x !l2) [3;4;5;6];
+        List.iter (fun x -> intended := append x !intended) [1;2];
+        let s1 = {elems=(!l1)} and s2 = {elems=(!l2)} and i_set = {elems=(!intended)} in 
+          if to_list (difference s1 s2) = to_list i_set then "correct" else "incorrect"
+    with exn -> Stdlib.raise exn end
+
+let test_sym_diff_1 () =
+  Alcotest.(check string) "sym_diff" "correct" begin
+    try
+      let l1 = {head=(ref None)} |> ref and l2 = {head=(ref None)} |> ref and intended = {head=(ref None)} |> ref in
+        List.iter (fun x -> l1 := append x !l1) [1;2;3;4];
+        List.iter (fun x -> l2 := append x !l2) [3;4;5;6];
+        List.iter (fun x -> intended := append x !intended) [1;2;5;6];
+        let s1 = {elems=(!l1)} and s2 = {elems=(!l2)} and i_set = {elems=(!intended)} in 
+          if to_list (difference s1 s2) = to_list i_set then "correct" else "incorrect"
+    with exn -> Stdlib.raise exn end
+
 let () =
   let open Alcotest in
   run "Set" [
@@ -124,5 +157,14 @@ let () =
     ];
     "union", [
       test_case "Test" `Quick test_union_1
+    ];
+    "intersection", [
+      test_case "Test" `Quick test_intersection_1
+    ];
+    "difference", [
+      test_case "Test" `Quick test_difference_1
+    ];
+    "sym_diff", [
+      test_case "Test" `Quick test_sym_diff_1
     ];
   ]

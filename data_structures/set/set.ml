@@ -63,28 +63,29 @@ let union s1 s2 =
           iter {head=node.next} (insert acc node.v 0) end
   in iter (extend s1.elems s2.elems) {head=(ref None)}
 
+(*Order is preserved. If s1 and s2 are ordered sets, intersection s1 s2 will be an ordered set.*)
 let intersection (s1: 'a set) (s2: 'a set) =
-  let rec iter = fun ?(store: 'a list = []) (l: 'a sll) (acc: 'a sll)  ->
+  let rec iter = fun ?(store: 'a sll = {head=ref None}) (l: 'a sll) (acc: 'a sll)  ->
     match !(l.head) with
-    | None -> {elems=acc} 
+    | None -> {elems=reverse acc} 
     | Some node ->
-      if List.mem node.v store then
-        iter ~store {head=node.next} (append node.v acc)
+      if exists node.v store then
+        iter ~store {head=node.next} (insert acc node.v 0)
       else
-        iter ~store:(node.v :: store) {head=node.next} acc  
+        iter ~store:(insert store node.v 0) {head=node.next} acc  
   in iter (extend s1.elems s2.elems) {head=(ref None)} 
 
 (*Find the elements which are only in set 1.*)
 let difference (s1: 'a set) (s2: 'a set) =
-  let rec iter = fun ?(difference: 'a sll = {head=(ref None)}) (elems1: 'a sll) ->
-    match !(elems1.head) with
-    | None -> {elems=(remove difference 0)}
+  let rec iter = fun (e1: 'a sll) (acc: 'a sll) ->
+    match !(e1.head) with
+    | None -> {elems=reverse acc}
     | Some node ->
       if member node.v s2 then
-        iter ~difference (remove elems1 0) 
+        iter {head=node.next} acc
       else
-        iter ~difference:(insert difference node.v 0) (remove elems1 0) 
-  in iter s1.elems
+        iter {head=node.next} (insert acc node.v 0)
+  in iter s1.elems {head=ref None}
 
 let sym_diff (s1: 'a set) (s2: 'a set) = 
   let intersection = intersection s1 s2 in
