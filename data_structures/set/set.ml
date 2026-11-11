@@ -87,63 +87,38 @@ let difference (s1: 'a set) (s2: 'a set) =
         iter {head=node.next} (insert acc node.v 0)
   in iter s1.elems {head=ref None}
 
-let sym_diff (s1: 'a set) (s2: 'a set) = 
-  let intersection = intersection s1 s2 in
-  let rec iter = fun ?(acc: 'a sll = {head=(ref None)}) (elems1: 'a sll) (elems2: 'a sll) ->
-    match !(elems1.head), !(elems2.head) with
-    | None, None -> {elems=acc}
-    | Some node, None ->
-      if member node.v intersection then
-        (*don't put in*)
-        iter ~acc (*elems1*){head=node.next} elems2
-      else
-        (*put in*)
-        iter ~acc:(insert acc node.v 0) (*elems1*){head=node.next} elems2
-    | None, Some node ->
-      if member node.v intersection then
-        (*don't put in*) 
-        iter ~acc elems1 (*elems2*){head=node.next}
-      else
-        (*put in*)
-        iter ~acc:(insert acc node.v 0) elems1 (*elems2*){head=node.next}
-    | Some node1, Some node2 ->
-      if member node1.v intersection && member node2.v intersection then
-        (*if both are members of intersection, add neither.*)
-        iter ~acc (*elems1*){head=node1.next} (*elems2*){head=node2.next}
-      else if member node1.v intersection && not (member node2.v intersection) then
-        (*if node2 is a member of the intersection, add it.*)
-        let new_acc = insert acc node2.v 0 in
-          iter ~acc:new_acc (*elems1*){head=node1.next} (*elems2*){head=node2.next} 
-      else if not (member node1.v intersection) && member node2.v intersection then 
-        (*if node1 is a member of the intersection, add it.*)
-        let new_acc = insert acc node1.v 0 in
-          iter ~acc:new_acc (*elems1*){head=node1.next} (*elems2*){head=node2.next} 
-      else 
-        (*if both are members  of the intersection, add them both.*)
-        let new_acc = insert acc node1.v 0 in
-        let new_new_acc = insert new_acc node2.v 0 in
-          iter ~acc:new_new_acc (*elems1*){head=node1.next} (*elems2*){head=node2.next}  
-  in iter s1.elems s2.elems 
+(*Order is preserved.*)
+let sym_diff (s1: 'a set) (s2: 'a set) =
+  (*Determine which elements are not in the intersection.*)
+  let d1 = difference s1 s2 and d2 = difference s2 s1 in
+    {elems=extend d1.elems d2.elems}
 
 (*Check if s1 is a subset of s2.*)
 let is_subset s1 s2 =
-  if List.for_all (fun x -> member x s2) (to_list s1) then
-    true
-  else
-    false
+  let rec iter = fun (e1: 'a sll) ->
+    match !(e1.head) with
+    | None -> true 
+    | Some node ->
+      if member node.v s2 then
+        iter {head=node.next}
+      else
+        false
+  in iter s1.elems
 
 (*Check if s1 is a superset of s2.*)
 let is_superset s1 s2 =
-  if List.for_all (fun x -> member x s1) (to_list s2) then
-    true
-  else
-    false
+  is_subset s2 s1
 
 let is_disjoint s1 s2 =
-  if List.for_all (fun x -> not_member x s2) (to_list s1) then
-    true
-  else
-    false
+  let rec iter = fun (e1: 'a sll) ->
+    match !(e1.head) with
+    | None -> true 
+    | Some node ->
+      if not_member node.v s2 then
+        iter {head=node.next}
+      else
+        false
+  in iter s1.elems
 
 (*
 let rbs : int -> set -> bool
