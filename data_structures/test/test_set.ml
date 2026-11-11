@@ -131,8 +131,74 @@ let test_sym_diff_1 () =
         List.iter (fun x -> l2 := append x !l2) [3;4;5;6];
         List.iter (fun x -> intended := append x !intended) [1;2;5;6];
         let s1 = {elems=(!l1)} and s2 = {elems=(!l2)} and i_set = {elems=(!intended)} in 
-          if to_list (difference s1 s2) = to_list i_set then "correct" else "incorrect"
+          if to_list (sym_diff s1 s2) = to_list i_set then "correct" else "incorrect"
     with exn -> Stdlib.raise exn end
+
+let test_is_subset_1 () =
+  Alcotest.(check string) "is_subset" "correct" begin
+    try
+      let l1 = {head=(ref None)} |> ref and l2 = {head=(ref None)} |> ref in
+        List.iter (fun x -> l1 := append x !l1) [1;2;3;4;5;6;7;8];
+        List.iter (fun x -> l2 := append x !l2) [6;7];
+        let s1 = {elems=(!l1)} and s2 = {elems=(!l2)} in
+          if is_subset s2 s1 then "correct" else "incorrect"
+    with _ -> "failure"
+  end
+
+let test_is_subset_2 () =
+  Alcotest.(check string) "is_subset" "correct" begin
+    try
+      let l1 = {head=(ref None)} |> ref and l2 = {head=(ref None)} |> ref in
+        List.iter (fun x -> l1 := append x !l1) [1;2;3;4;5;6;7;8];
+        List.iter (fun x -> l2 := append x !l2) [6;7];
+        let s1 = {elems=(!l1)} and s2 = {elems=(!l2)} in
+          if is_subset s1 s2 then "incorrect" else "correct"
+    with _ -> "failure"
+  end
+
+let test_is_superset_1 () =
+  Alcotest.(check string) "is_superset" "correct" begin
+    try
+      let l1 = {head=(ref None)} |> ref and l2 = {head=(ref None)} |> ref in
+        List.iter (fun x -> l1 := append x !l1) [1;2;5];
+        List.iter (fun x -> l2 := append x !l2) [2];
+        let s1 = {elems=(!l1)} and s2 = {elems=(!l2)} in
+          if is_superset s1 s2 then "correct" else "incorrect"
+    with _ -> "failure"
+  end
+
+let test_is_superset_2 () =
+  Alcotest.(check string) "is_superset" "correct" begin
+    try
+      let l1 = {head=(ref None)} |> ref and l2 = {head=(ref None)} |> ref in
+        List.iter (fun x -> l1 := append x !l1) [1;2;5;8];
+        List.iter (fun x -> l2 := append x !l2) [5;10;9];
+        let s1 = {elems=(!l1)} and s2 = {elems=(!l2)} in
+          if is_superset s1 s2 then "incorrect" else "correct"
+    with _ -> "failure"
+  end
+
+let test_is_disjoint_1 () =
+  Alcotest.(check string) "is_disjoint" "correct" begin
+    try
+      let l1 = {head=(ref None)} |> ref and l2 = {head=(ref None)} |> ref in
+        List.iter (fun x -> l1 := append x !l1) [1;2;5];
+        List.iter (fun x -> l2 := append x !l2) [8;10;11];
+        let s1 = {elems=(!l1)} and s2 = {elems=(!l2)} in
+          if is_disjoint s1 s2 then "correct" else "incorrect"
+    with _ -> "failure"
+  end
+
+let test_is_disjoint_2 () =
+  Alcotest.(check string) "is_disjoint" "correct" begin
+    try
+      let l1 = {head=(ref None)} |> ref and l2 = {head=(ref None)} |> ref in
+        List.iter (fun x -> l1 := append x !l1) [1;2;5;8];
+        List.iter (fun x -> l2 := append x !l2) [5;10;9];
+        let s1 = {elems=(!l1)} and s2 = {elems=(!l2)} in
+          if is_disjoint s1 s2 then "incorrect" else "correct"
+    with _ -> "failure"
+  end
 
 let () =
   let open Alcotest in
@@ -166,5 +232,17 @@ let () =
     ];
     "sym_diff", [
       test_case "Test" `Quick test_sym_diff_1
+    ];
+    "is_subset", [
+      test_case "Test" `Quick test_is_subset_1;
+      test_case "Test" `Quick test_is_subset_2;
+    ];
+    "is_superset", [
+      test_case "Test" `Quick test_is_superset_1;
+      test_case "Test" `Quick test_is_superset_2;
+    ];
+    "is_disjoint", [
+      test_case "Test" `Quick test_is_disjoint_1;
+      test_case "Test" `Quick test_is_disjoint_2;
     ];
   ]
