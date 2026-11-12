@@ -61,7 +61,11 @@ let union s1 s2 =
           iter {head=node.next} acc end
         else begin
           iter {head=node.next} (insert acc node.v 0) end
-  in iter (extend s1.elems s2.elems) {head=(ref None)}
+  in 
+    if size s1.elems = 0 && size s2.elems = 0 then
+      {elems={head=ref None}}
+    else
+      iter (extend s1.elems s2.elems) {head=(ref None)}
 
 (*Order is preserved. If s1 and s2 are ordered sets, intersection s1 s2 will be an ordered set.*)
 let intersection (s1: 'a set) (s2: 'a set) =
@@ -120,8 +124,15 @@ let is_disjoint s1 s2 =
         false
   in iter s1.elems
 
-(*
-let rbs : int -> set -> bool
-
-let rts : int -> set -> bool (*recursive ternary search.*)
-*)
+let rbs v (s: int set) = 
+  let rec iter = fun (the_set: int set) (v: int) ->
+    try
+      let partitioned = partition the_set.elems ( (size the_set.elems) / 2 ) in
+      let middle = search (search partitioned 1) 0 and lhs = search partitioned 0 and rhs = search partitioned 1 in
+        match (v < middle), (v > middle), (v = middle) with
+        | true, false, false -> iter {elems=lhs} v
+        | false, true, false -> iter {elems=rhs} v
+        | false, false, true -> true
+        | _ -> if not_member v the_set then false else true
+    with exn -> if Printexc.to_string exn = "Failure(\"partition: invalid argument\")" then false else raise exn
+  in iter s v

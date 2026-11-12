@@ -28,8 +28,4 @@ val is_superset : 'a set -> 'a set -> bool
 
 val is_disjoint : 'a set -> 'a set -> bool
 
-(*
-val rbs : int -> 'a set -> bool
-
-val rts : int -> 'a set -> bool (*recursive ternary search.*)
-*)
+val rbs : int -> int set -> bool

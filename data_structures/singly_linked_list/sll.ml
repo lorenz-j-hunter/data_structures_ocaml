@@ -131,6 +131,8 @@ let reverse (ll: 'a sll) =
 (*The second list in the partition has its first elem
 on the index argument.*)
 let partition (ll: 'a sll) (i_arg: int) =
+  (*base case*)
+  if size ll <= i_arg then failwith "partition: invalid argument";
   let first: 'a sll ref = ref {head=ref None} and second: 'a sll ref = ref {head=ref None} in
   let rec partition_unwrapped = fun ~(n: 'a node option ref) ~(i: int) ->
     let next = n |> unpeel |> getnext in
@@ -140,7 +142,7 @@ let partition (ll: 'a sll) (i_arg: int) =
           let v = getv n in (second := append v !second); end
       | Some _ -> begin
         if i >= i_arg then begin
-          let v = getv n in ( second := append v !second ); end;
+          let v = getv n in (second := append v !second); end;
         partition_unwrapped ~n:next ~i:(i+1);
         if i < i_arg then begin
           let v = getv n in (first := insert !first v 0); end;

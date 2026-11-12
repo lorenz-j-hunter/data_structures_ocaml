@@ -178,6 +178,28 @@ let test_partition_1 () =
     with _ -> "failure" 
   end
 
+let test_partition_2 () =
+  Alcotest.(check string) "Partition" "correct" begin
+    try
+      let sll = ref {head=ref None} in (
+        List.iter (fun x -> sll := append x !sll) [1];
+        let first: int list = {elems=search (partition !sll 0) 0} |> to_list
+        and second: int list = {elems=search (partition !sll 0) 1} |> to_list in
+          if [[];[1]] = [first;second] then "correct" else "incorrect"
+      )
+    with _ -> "failure" 
+  end
+
+let test_partition_3 () =
+  Alcotest.(check string) "Partition" "correct" begin
+    try
+      let sll = {head=ref None} in (
+        let _ = {elems=search (partition sll 0) 0} |> to_list in
+          "failure"
+      )
+    with exn -> if Printexc.to_string exn = "Failure(\"partition: invalid argument\")" then "correct" else "incorrect" 
+  end
+
 let () =
   let open Alcotest in
   run "SLL" [
@@ -213,5 +235,7 @@ let () =
     ];
     "partition", [
       test_case "Test" `Quick test_partition_1;
+      test_case "Test" `Quick test_partition_2;
+      test_case "Test" `Quick test_partition_3;
     ]
   ]
