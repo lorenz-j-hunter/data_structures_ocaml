@@ -1,4 +1,3 @@
-(*all of these functions mutate the argument, then return that argument.*)
 (*This is the directory upon which all others depend.*)
 
 type 'a node = {v: 'a; next: ('a node option) ref}

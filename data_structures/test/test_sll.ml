@@ -110,6 +110,39 @@ let test_remove_1 () =
     with _ -> -1
   end
 
+let test_remove_2 () =
+  Alcotest.(check int) "Remove" 1 begin
+    try
+      let sll = ref (new_sll 0) in (
+        List.iter (fun x -> sll := append x !sll) [1;2;3;4];
+        sll := remove !sll 0;
+        (search !sll 0)
+      )
+    with _ -> -1
+  end
+
+let test_remove_3 () =
+  Alcotest.(check string) "Remove" "correct" begin
+    try
+      let sll = ref (new_sll 0) in (
+        List.iter (fun x -> sll := append x !sll) [1;2;3;4];
+        sll := remove !sll 10;
+        if (search !sll 3) = 5 then "failure" else "failure"
+      )
+    with _ -> "correct" 
+  end
+
+let test_remove_4 () =
+  Alcotest.(check string) "Remove" "correct" begin
+    try
+      let sll = ref (new_sll 0) in (
+        List.iter (fun x -> sll := append x !sll) [1;2;3;4];
+        sll := remove !sll 4;
+        if (search !sll 3) = 3 then "correct" else "incorrect"
+      )
+    with _ -> "failure" 
+  end
+
 let test_extend_1 () =
   Alcotest.(check int) "Extend" 9 begin
     try
@@ -223,6 +256,9 @@ let () =
     ];
     "remove", [
       test_case "Test" `Quick test_remove_1;
+      test_case "Test" `Quick test_remove_2;
+      test_case "Test" `Quick test_remove_3;
+      test_case "Test" `Quick test_remove_4;
     ];
     "extend", [
       test_case "Test" `Quick test_extend_1;

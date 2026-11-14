@@ -71,23 +71,29 @@ let insert (ll: 'a sll) (v: 'a) (index: int) =
 
 let remove (ll: 'a sll) (index: int) = 
   if index < 0 then failwith "remove: invalid index";
-  if index = 0 then (* Base case. *)
-    match !(ll.head) with
-    | Some h -> begin
-      ll.head := !(h.next);
-      {head=ll.head} end
-    | None -> ll 
-  else
+  if index >= size ll then failwith "remove: invalid index";
+  match index with
+  | 0 ->
+    ll.head := ll.head |> unpeel |> getnext |> (!);
+    {head=ll.head}
+  | 1 ->
+    let next = ll.head |> unpeel |> getnext and nextnext = ll.head |> unpeel |> getnext |> unpeel |> getnext |> (!) in
+      next := nextnext;
+      {head=ll.head}
+  | _ ->
     let rec remove_unwrapped = fun ~(n: 'a node option ref) ~(index: int) ->
-      match !n with
-      | Some node ->
-        if index = 1 then
-          let nextnext = Option.get !((Option.get !(node.next)).next) in
-            node.next := Some nextnext;
-            {head=ll.head} (*return*)
-        else
-          remove_unwrapped ~n:(node.next) ~index:(index-1)
-      | None -> failwith "remove: out of bounds"
+      match n |> unpeel |> getnext |> unpeel |> getnext |> (!) with (*=nextnext*)
+      | None ->
+        let next = n |> unpeel |> getnext in
+          next := None;
+        {head=ll.head} (*return*)
+      | Some _ ->
+        let next = n |> unpeel |> getnext and nextnext = n |> unpeel |> getnext |> unpeel |> getnext |> (!) in
+          if index = 1 then begin
+            next := nextnext;
+            {head=ll.head} end
+          else
+            remove_unwrapped ~n:next ~index:(index-1)
     in remove_unwrapped ~n:ll.head ~index:index
 
 let extend (ll_one: 'a sll) (ll_two: 'a sll) = 

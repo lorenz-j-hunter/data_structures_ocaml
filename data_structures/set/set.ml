@@ -62,7 +62,7 @@ let union s1 s2 =
         else begin
           iter {head=node.next} (insert acc node.v 0) end
   in 
-    if size s1.elems = 0 && size s2.elems = 0 then
+    if size s1.elems = 0 && size s2.elems = 0 then (*edge case*)
       {elems={head=ref None}}
     else
       iter (extend s1.elems s2.elems) {head=(ref None)}
@@ -124,6 +124,7 @@ let is_disjoint s1 s2 =
         false
   in iter s1.elems
 
+(*An ordered integer set must be the argument.*)
 let rbs v (s: int set) = 
   let rec iter = fun (the_set: int set) (v: int) ->
     try
